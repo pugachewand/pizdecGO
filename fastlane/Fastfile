@@ -1,0 +1,69 @@
+require_relative './helpers.rb'
+
+desc "Push tag with new version"
+lane :push_tag do |options|
+	deploy_branch = options[:deploy_branch]
+	version = options[:version].join('-')
+	tag = ['version', version, deploy_branch].join('/')
+
+	add_git_tag(tag: tag)
+	push_git_tags
+
+end
+
+desc "Get version by last tag"
+lane :get_version_numbers_by_git_tags do |options|
+	sh('git fetch --tags')
+	sh('git tag -l "version/*" --sort=v:refname | tail -n1')
+	sh('git tag -l "version/*" --sort=v:refname | tail -n1 >> ./version_marker')
+	file_marker = File.open('./version_marker')
+	last_tag = file_marker.read.strip
+	file_marker.close
+	sh('rm ./version_marker')
+	puts "Last tag: #{last_tag}"
+
+	i = options[:increment] ? 1 : 0
+	version_in = last_tag.split('/')[1]
+	arr = version_in.split('-')[0].split('.')
+	arr[2] = arr[2].to_i + i
+	version_out = arr.join('.')
+
+	build_number = version_in.split('-')[1].to_i + i
+	result = [version_out, build_number]
+end
+
+# lane :send_to_slack_after_all do |options|
+# 	slack(
+# 		message: "Successfully deployed new App Update.",
+# 		success: true,
+# 		payload: {
+# 			"Build Date" => Time.new.to_s,
+# 			"Built from branch" => FastlaneHelpers::CURRENT_BRANCH,
+# 			"Lane" => options[:lane],
+# 			"Platform" => options[:platform],
+# 		},
+# 		default_payloads: [:git_author]
+# 	)
+# end
+
+lane :get_release_notes do |options|
+
+	branch = options[:branch]
+	build_number = options[:build_number]
+
+	array = YAML.load_file("#{FastlaneHelpers::HELPERS_DIR}/release_notes_#{branch}.yml")
+	match_element = array.find { |el| el['versions']['from'] <= build_number && el['versions']['to'] >= build_number }
+
+	if match_element.nil? then
+		sh 'echo "Nothing matched build number"'
+		nil
+		next
+	end
+
+	result = match_element['notes']
+		.map { |el| '* ' + el  }
+		.join "\n"
+
+	sh "echo \"release notes found: \n #{result} \""
+	result
+end

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- pax terminals -->
+    <usb-device vendor-id="4660" product-id="257" /> <!-- D200 -->
+    <!-- scanner -->
+    <usb-device vendor-id="11734" product-id="9684" />  <!--SuperLead 4210 -->
+    <!-- … more devices … -->
+</resources>

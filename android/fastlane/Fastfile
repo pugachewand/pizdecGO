@@ -1,0 +1,190 @@
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+require 'rest_client'
+require '../../fastlane/helpers.rb'
+import '../../fastlane/Fastfile'
+
+default_platform(:android)
+
+platform :android do
+
+	before_all do
+		setup_ci
+	end
+
+	desc "Selects default lane depending on current branch"
+	lane :auto_lane do
+		if FastlaneHelpers::BRANCH_IS_PRODUCTION then
+			play_store_prod
+		else
+			firebase
+		end
+	end
+
+	desc "Push a new Beta Build to Firebase App Distribution"
+	lane :firebase do
+		sh "echo $FIREBASE_APP_SERVICE_KEY | base64 -d | tee ../firebase-app-distribution.json >/dev/null"
+		ENV['GOOGLE_APPLICATION_CREDENTIALS'] = './firebase-app-distribution.json'
+
+		version = get_version_numbers_by_git_tags(increment: true)
+		build_number = version[1]
+
+		set_project_version(
+			version: version,
+			postfix: FastlaneHelpers::BUILD_POSTFIX,
+		)
+
+		if FastlaneHelpers::DRY_RUN then
+			sh "echo \"Dry run mode activated. Skipping build for version #{version} #{FastlaneHelpers::BUILD_POSTFIX}\""
+		else
+
+			release_notes = get_release_notes(build_number: build_number, branch: 'beta')
+			if release_notes.nil? then
+				release_notes = changelog_from_git_commits(
+					pretty: "• %s",
+					date_format: "short",
+					match_lightweight_tag: false,
+					merge_commit_filtering: "exclude_merges"
+				)
+			end
+
+			build(
+				flavour: FastlaneHelpers::ANDROID_FLAVOR,
+				task: "clean assemble"
+			)
+
+
+			firebase_app_distribution(
+				app: FastlaneHelpers::FIREBASE_APP_ANDROID,
+				groups: "our-team",
+				release_notes: release_notes
+			)
+		end
+
+		push_tag(
+			deploy_branch: 'firebase-android',
+			version: version,
+		)
+	end
+
+	desc "Push a new ALPHA version to the Google Play"
+	lane :play_store_alpha do
+
+		version = get_version_numbers_by_git_tags(increment: true)
+
+		if FastlaneHelpers::DRY_RUN then
+			sh "echo \"Dry run mode activated. Skipping playmarket alpha build for version #{version}\""
+		else
+
+			set_project_version(version: version)
+
+			build(
+				flavour: FastlaneHelpers::ANDROID_FLAVOR,
+				task:"clean bundle"
+			)
+
+			upload_to_play_store(
+				package_name: FastlaneHelpers::PROD_PACKAGE_NAME,
+				track: 'alpha',
+				aab: FastlaneHelpers::AAB_PATH,
+				skip_upload_metadata: true,
+				skip_upload_changelogs: true,
+				skip_upload_images: true,
+				skip_upload_screenshots: true,
+			)
+		end
+
+		push_tag(
+			deploy_branch: 'play-store-alpha',
+			version: version
+		)
+	end
+
+	desc "Push a new PROD version to the Google Play"
+	lane :play_store_prod do
+
+		version = get_version_numbers_by_git_tags(increment: true)
+		set_project_version(version: version)
+
+		if FastlaneHelpers::DRY_RUN then
+			sh "echo \"Dry run mode activated. Skipping production build for version #{version}\""
+		else
+			build(
+				flavour: FastlaneHelpers::ANDROID_FLAVOR,
+				task:"clean bundle"
+			)
+
+			upload_to_play_store(
+				package_name: FastlaneHelpers::PROD_PACKAGE_NAME,
+				track: 'production',
+				rollout: '1',
+				aab: FastlaneHelpers::AAB_PATH,
+				skip_upload_metadata: true,
+				skip_upload_changelogs: true,
+				skip_upload_images: true,
+				skip_upload_screenshots: true,
+			)
+		end
+
+		push_tag(
+			deploy_branch: "play-store-prod",
+			version: version
+		)
+	end
+
+	desc "Generates an initial APK\\AAB file to manually upload to Google Play"
+	lane :build_apk_to_download do
+
+		version = get_version_numbers_by_git_tags(increment: true)
+		set_project_version(version: version)
+
+		build(
+			flavour:FastlaneHelpers::ANDROID_FLAVOR,
+			task:"clean assemble"
+			# task: "clean bundle"
+		)
+
+
+		sh "ls -R ../app/build/outputs/"
+
+		upload_root_url = ENV['APK_UPLOAD_URL']
+		RestClient.post("#{upload_root_url}/upload", :this_file => File.new('../app/build/outputs//apk/prod/release/app-prod-release.apk'))
+		# RestClient.post('http://43ef5d2ef120.ngrok.io/upload', :this_file => File.new('../app/build/outputs/bundle/prodRelease/app-prod-release.aab'))
+
+	end
+
+	desc "Build"
+	lane :build do |options|
+		sh "echo $KEYSTORE | base64 -d | tee ../izigo.keystore ../app/izigo.keystore >/dev/null"
+		sh "echo $GOOGLE_PLAY_KEY | base64 -d | tee ../service-key.json >/dev/null"
+		properties = {
+			"android.injected.signing.store.file" => "izigo.keystore",
+			"android.injected.signing.store.password" => ENV['STORE_PASSWORD'],
+			"android.injected.signing.key.alias" => ENV['KEY_ALIAS'],
+			"android.injected.signing.key.password" => ENV['KEY_PASSWORD'],
+		}
+
+		sh "echo \"building with flavor #{options[:flavour]}\""
+
+		gradle(task: options[:task], build_type: 'Release', flavor: options[:flavour], properties: properties)
+	end
+
+	desc "Set project version"
+	lane :set_project_version do |options|
+
+		temp_version = options[:version][0]
+		postfix = options[:postfix].to_s
+		version_name = [temp_version, postfix].reject(&:empty?).join('-')
+
+		android_set_version_name(
+			version_name: version_name,
+			gradle_file: "app/build.gradle"
+		)
+
+		android_set_version_code(
+			version_code: options[:version][1],
+			gradle_file: "app/build.gradle"
+		)
+	end
+
+end

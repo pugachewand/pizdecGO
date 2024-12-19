@@ -1,0 +1,1 @@
+call C:\sonar-scanner-4.5.0.2216-windows\bin\sonar-scanner.bat -D"project.settings=sonar-project.properties" -D"sonar.gitlab.commit_sha=%CI_COMMIT_SHA%" -D"sonar.gitlab.project_id=%CI_PROJECT_ID%" -D"sonar.gitlab.ref_name=%CI_COMMIT_REF_NAME%"

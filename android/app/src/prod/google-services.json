@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "915623409376",
+    "project_id": "izigo-prod",
+    "storage_bucket": "izigo-prod.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:915623409376:android:4b4ebb53516aa0acb40285",
+        "android_client_info": {
+          "package_name": "com.izigo.izigo.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOQx4R8GOeBj0KkF-UTv9LeSuaig4_vyk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

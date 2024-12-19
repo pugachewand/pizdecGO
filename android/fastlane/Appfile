@@ -1,0 +1,13 @@
+require '../../fastlane/helpers.rb'
+
+
+package_name(FastlaneHelpers::BETA_PACKAGE_NAME)
+json_key_file("service-key.json") # Path to the json secret file - Follow https://docs.fastlane.tools/actions/supply/#setup to get one
+
+for_lane :play_store_alpha do
+	package_name(FastlaneHelpers::PROD_PACKAGE_NAME)
+end
+
+for_lane :play_store_prod do
+	package_name(FastlaneHelpers::PROD_PACKAGE_NAME)
+end

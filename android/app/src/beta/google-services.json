@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "75922173914",
+    "project_id": "izigo-beta",
+    "storage_bucket": "izigo-beta.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:75922173914:android:b21cc381f72b3f706e5ae3",
+        "android_client_info": {
+          "package_name": "com.izigo.beta"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQciWlAODD7Vb4XQs8rH5_cGMB7Iv0Zk8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

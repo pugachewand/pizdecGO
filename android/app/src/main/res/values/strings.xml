@@ -1,0 +1,7 @@
+<resources>
+    <!-- <string name="app_name">iziGo</string> -->
+    <string name="pos_terminal_smartsaleterminal_permission">POS terminal access</string>
+    <string name="pos_terminal_smartsaleterminal_permission_description">The permission needs for access to POS terminal functionality.</string>
+    <string name="scanner_permission">Scanner access</string>
+    <string name="scanner_permission_description">The permission needs for access to scanner functionality.</string>
+</resources>

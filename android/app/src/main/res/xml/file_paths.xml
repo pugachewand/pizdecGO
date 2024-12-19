@@ -1,0 +1,8 @@
+<paths>
+    <external-files-path
+        name="logs-files"
+        path="/sdcard/Android/media/${PACKAGE_NAME}/logs" />
+    <external-media-path
+        name="logs-media"
+        path="/sdcard/Android/media/${PACKAGE_NAME}/logs" />
+</paths>

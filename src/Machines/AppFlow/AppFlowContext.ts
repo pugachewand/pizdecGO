@@ -1,0 +1,98 @@
+import { ICheckItemRequisitesEntity } from '../../BackendEntities/Cart/ProductEntity';
+import { IPurchaseInitiationResponse } from '../../BackendEntities/Cart/PurchaseRepoEntity';
+
+const PurchaseContextInit: IPurchaseInitiationResponse = {
+  posOperationId:0,
+  status: null,
+  brandAccountId:0,
+  posId:0,
+  settings:"",
+  usingFiscalization:false,
+  paymentMethodTypes: [],
+  paymentSystem:0,
+  posModel:0,
+  posType:0,
+  countryIso:"",
+  bonusPayPercent:0,
+}
+
+export const PurchaseContextInitial = {
+  init: PurchaseContextInit,
+  items: [] as ICheckItemRequisitesEntity[],
+}
+
+
+export const PurchaseContextInitTest: IPurchaseInitiationResponse = {
+  posOperationId:1,
+  status: null,
+  brandAccountId:2,
+  posId:3,
+  settings:"",
+  usingFiscalization:false,
+  paymentMethodTypes: [],
+  paymentSystem:2,
+  posModel:4,
+  posType:3,
+  countryIso:"",
+  bonusPayPercent:1,
+}
+export const PurchaseContextTest = {
+  init: PurchaseContextInitTest,
+  items: [{
+    labelForBackend: '1',
+    labeledGoodId:435375,
+    label:"ilv7",
+    posOperationId:371943,
+    goodName:"test 1",
+    price:305,
+    source:1,
+    currency:"RUB",
+    discountAmount:5,
+    goodImagePath:"https://storageaccountnasla860f.blob.core.windows.net/betafiles/images/good/ef1ea62d-d16a-4f0e-a230-30788c0d1fa97dfb568c-fbd8-48bf-90e2-31e7eedcf0ccсэндвич-ролл цезарь.jpg",
+    goodCalories:741,
+    bonusCheckItems: [],  
+  },
+  {
+    labelForBackend: '2',
+    labeledGoodId:453423,
+    label:"ilv231",
+    posOperationId:371943,
+    goodName:"test 2",
+    price:150,
+    source:1,
+    currency:"RUB",
+    discountAmount:50,
+    goodImagePath:"https://storageaccountnasla860f.blob.core.windows.net/betafiles/images/good/ef1ea62d-d16a-4f0e-a230-30788c0d1fa97dfb568c-fbd8-48bf-90e2-31e7eedcf0ccсэндвич-ролл цезарь.jpg",
+    goodCalories:741,
+    bonusCheckItems: [],  
+  },
+  {
+    labelForBackend: '2',
+    labeledGoodId:4534232,
+    label:"ilv231",
+    posOperationId:371943,
+    goodName:"test 2",
+    price:150,
+    source:1,
+    currency:"RUB",
+    discountAmount:50,
+    goodImagePath:"https://storageaccountnasla860f.blob.core.windows.net/betafiles/images/good/ef1ea62d-d16a-4f0e-a230-30788c0d1fa97dfb568c-fbd8-48bf-90e2-31e7eedcf0ccсэндвич-ролл цезарь.jpg",
+    goodCalories:741,
+    bonusCheckItems: [],  
+  },
+  {
+    labelForBackend: '2',
+    labeledGoodId: 1241,
+    label:"ilv231",
+    posOperationId:371943,
+    goodName:"test 2",
+    price:150,
+    source:1,
+    currency:"RUB",
+    discountAmount:50,
+    goodImagePath:"https://storageaccountnasla860f.blob.core.windows.net/betafiles/images/good/ef1ea62d-d16a-4f0e-a230-30788c0d1fa97dfb568c-fbd8-48bf-90e2-31e7eedcf0ccсэндвич-ролл цезарь.jpg",
+    goodCalories:741,
+    bonusCheckItems: [],  
+  },
+],
+}
